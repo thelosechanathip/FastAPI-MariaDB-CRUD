@@ -1,0 +1,29 @@
+from datetime import datetime
+from sqlalchemy import String, Integer, DateTime, func
+from sqlalchemy.orm import Mapped, mapped_column
+from app.db.base import Base
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+
+    username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    is_active: Mapped[bool] = mapped_column(default=True)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+
+    updated_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),  # ✅ ตอนสร้างครั้งแรกให้มีค่า
+        onupdate=func.now(),  # ✅ เวลา update ให้เปลี่ยน
+        nullable=True,  # ✅ ยัง NOT NULL ได้ เพราะมี default แล้ว
+    )
